@@ -11,13 +11,13 @@ the Snapshots header provides two classes:
 
 ## Motivation
 
-This interface is thematically similar to the proposed `std::snapshot_ptr`/`std::snapshot_source`, but the fact that `Snapshot::Source` provides a dedicated `cleanse` method means programmers can decide which thread(s) are supposed to delete unused values.
+This interface is very similar to the proposed `std::snapshot_ptr`/`std::snapshot_source` (https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p0561r5.html), but `Snapshot::Source` provides a dedicated `cleanse` method; which means programmers can decide which thread(s) are supposed to delete unused values.
 
-Setting a new value and cleaning up stale values are mutually exclusive, and use a mutex to enforce this.
+Setting a new value and cleaning up stale values are mutually exclusive; the implementation uses a mutex to enforce this.
 However, getting a snapshot of the current data performs a single `fetch_add` to read an index and increment a reference count.
 
 This interface may be useful if reading a snapshot needs to be lockfree, for example in realtime/deadline-oriented code.
-A similar interface can be implemented using epoch-based approaches, but that generally requires registering readers in-advancce, whereas reference counting generalizes well to runaway or recursive reader counts.
+A similar interface can be implemented using epoch-based approaches (https://www.youtube.com/watch?v=7fKxIZOyBCE), but that generally requires registering readers in-advance, whereas reference counting generalizes well to runaway or recursive readers.
 
 ## Example Usage
 
